@@ -16,40 +16,88 @@ function FormListStore() {
   }, []);
 
   // for form search
-  const [expand, setExpand] = useState(false);
+  // const [expand, setExpand] = useState(false);
   const [form] = Form.useForm();
 
   const getFields = () => {
-    const count = expand ? 10 : 6;
+    const count = 3;
     const children = [];
 
-    for (let i = 0; i < count; i++) {
-      children.push(
-        <Col span={8} key={i}>
-          <Form.Item
-            name={`field-${i}`}
-            label={`Field ${i}`}
-            rules={[
-              {
-                required: true,
-                message: 'Input something!',
-              },
-            ]}
-          >
-            {i % 3 !== 1 ? (
-              <Input placeholder="placeholder" />
-            ) : (
-              <Select defaultValue="2">
-                <Option value="1">1</Option>
-                <Option value="2">
-                  longlong
-                </Option>
-              </Select>
-            )}
-          </Form.Item>
-        </Col>,
-      );
-    }
+    // for (let i = 0; i < count; i++) {
+    children.push(
+      <Col span={8} >
+        <Form.Item
+          name={`Tên cửa hàng:`}
+          label={`Tên cửa hàng:`}
+          rules={[
+            {
+              required: true,
+              message: 'Input something!',
+            },
+          ]}
+        >
+          <Input placeholder="placeholder" />
+        </Form.Item>
+
+        <Form.Item
+          name={`field-1`}
+          label={`Field 1`}
+          rules={[
+            {
+              required: true,
+              message: 'Input something!',
+            },
+          ]}
+        >
+          <Input placeholder="placeholder" />
+          <Select defaultValue="2">
+            <Option value="1">gì</Option>
+            <Option value="2">
+              không log
+            </Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          name={`field-1`}
+          label={`Field 1`}
+          rules={[
+            {
+              required: true,
+              message: 'Input something!',
+            },
+          ]}
+        >
+          <Input placeholder="placeholder" />
+          <Select defaultValue="2">
+            <Option value="1">gì</Option>
+            <Option value="2">
+              không log
+            </Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          name={`field-1`}
+          label={`Field 1`}
+          rules={[
+            {
+              required: true,
+              message: 'Input something!',
+            },
+          ]}
+        >
+          <Input placeholder="placeholder" />
+          <Select defaultValue="2">
+            <Option value="1">gì</Option>
+            <Option value="2">
+              không log
+            </Option>
+          </Select>
+        </Form.Item>
+      </Col>,
+    );
+    // }
 
     return children;
   };
@@ -163,16 +211,6 @@ function FormListStore() {
             >
               Clear
             </Button>
-            <a
-              style={{
-                fontSize: 12,
-              }}
-              onClick={() => {
-                setExpand(!expand);
-              }}
-            >
-              {expand ? <UpOutlined /> : <DownOutlined />} Collapse
-            </a>
           </Col>
         </Row>
       </Form>

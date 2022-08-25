@@ -14,6 +14,7 @@ function LoginFrom() {
   const onFinish = (values) => {
     login(values)
       .then((response) => {
+        console.log(4444444, response?.data?.token);
         localStorage.clear()
         localStorage.setItem('Token', JSON.stringify(response?.data?.token));
         navigate("/dashboard")

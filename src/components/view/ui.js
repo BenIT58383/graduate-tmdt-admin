@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import 'antd/dist/antd.css';
 import {
+  AliwangwangOutlined,
+  BulbOutlined,
   DesktopOutlined,
   FileOutlined,
   PieChartOutlined,
@@ -23,6 +25,7 @@ function getItem(label, key, icon, children) {
 }
 
 const items = [
+  getItem(<AliwangwangOutlined />),
   getItem('Người dùng ', '1', <PieChartOutlined />),
   getItem('Cửa hàng', '2', <DesktopOutlined />),
   getItem('Đơn hàng', '3', <TeamOutlined />),

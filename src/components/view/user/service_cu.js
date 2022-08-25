@@ -29,9 +29,11 @@ function AddUser() {
       return {};
     }
     return ({
-      email: from?.email,
+      userName: from?.userName,
       phone: from?.phone,
-      fullName: from?.fullName,
+      email: from?.email,
+      name: from?.name,
+      dateOfBirth: from?.email,
     })
 
   }

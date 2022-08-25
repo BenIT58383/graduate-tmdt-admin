@@ -26,6 +26,8 @@ export const getDetaiUser = async (id) => {
 }
 
 export const updateUser = async (id, value) => {
+    console.log(111111111111111, value);
+
     const response = await DG_axios.put(`${url}/${id}`, value);
     return response.data || []
 };
@@ -35,10 +37,16 @@ export const login = async (value) => {
     return response.data || []
 };
 
+const token = async (value) => {
+    localStorage.getItem('Token')
+}
+
+console.log(2222222222, localStorage.getItem('Token'));
+
 export const DG_axios = axios.create({
     baseURL: url,
     headers: {
         "Content-Type": "application/json",
-        "Authorization": localStorage.getItem('Token')
+        "Authorization": localStorage.getItem('Token').replace('"', '')
     },
 });
