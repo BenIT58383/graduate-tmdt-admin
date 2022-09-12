@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Button, message, Table, Tag, Col, Form, Input, Row, Select } from "antd";
+import { Button, message, Table, Tag, Col, Form, Input, Row, Select, DatePicker, Space } from "antd";
 import { getStore, deleteStore } from "../../api/api_store";
-import UserUpdateDelete from "../../action/action";
+import { GetDetailUpdateDeleteUser } from "../../action/action_user";
 import { useNavigate } from 'react-router-dom';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
+import moment from "moment";
 
 const { Option } = Select;
 
 function FormListStore() {
   let navigate = useNavigate()
   const [data, setData] = useState([]);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   useEffect(() => {
     get()
@@ -19,98 +22,78 @@ function FormListStore() {
   // const [expand, setExpand] = useState(false);
   const [form] = Form.useForm();
 
+  const getStartDate = (value) => {
+    let startDate = value ? moment(value).format('YYYY-MM-DD') : null
+    setStartDate(startDate)
+  }
+
+  const getEndDate = (value) => {
+    let endDate = value ? moment(value).format('YYYY-MM-DD') : null
+    setEndDate(endDate)
+  }
+
   const getFields = () => {
-    const count = 3;
     const children = [];
 
-    // for (let i = 0; i < count; i++) {
     children.push(
       <Col span={8} >
         <Form.Item
-          name={`Tên cửa hàng:`}
-          label={`Tên cửa hàng:`}
+          name={`search`}
+          label={`search`}
           rules={[
             {
-              required: true,
-              message: 'Input something!',
+              required: false,
             },
           ]}
         >
-          <Input placeholder="placeholder" />
+          <Input allowClear={true} placeholder="Tên / Mô tả/ Chủ Cửa Hàng" />
         </Form.Item>
+      </Col>,
 
+      <Col span={7} >
         <Form.Item
-          name={`field-1`}
-          label={`Field 1`}
-          rules={[
-            {
-              required: true,
-              message: 'Input something!',
-            },
-          ]}
-        >
-          <Input placeholder="placeholder" />
-          <Select defaultValue="2">
-            <Option value="1">gì</Option>
-            <Option value="2">
-              không log
-            </Option>
-          </Select>
+          name={`time`}
+          label={`Thời gian tạo`}>
+          <Space direction="horizontal">
+            <DatePicker format={'DD/MM/YYYY'} onChange={getStartDate} />
+            ~
+            <DatePicker format={'DD/MM/YYYY'} onChange={getEndDate} />
+          </Space>
         </Form.Item>
+      </Col>,
 
+      <Col span={8}>
         <Form.Item
-          name={`field-1`}
-          label={`Field 1`}
+          name={`status`}
+          label={`Trạng thái`}
           rules={[
             {
-              required: true,
-              message: 'Input something!',
+              required: false,
             },
           ]}
         >
-          <Input placeholder="placeholder" />
-          <Select defaultValue="2">
-            <Option value="1">gì</Option>
-            <Option value="2">
-              không log
-            </Option>
-          </Select>
-        </Form.Item>
-
-        <Form.Item
-          name={`field-1`}
-          label={`Field 1`}
-          rules={[
-            {
-              required: true,
-              message: 'Input something!',
-            },
-          ]}
-        >
-          <Input placeholder="placeholder" />
-          <Select defaultValue="2">
-            <Option value="1">gì</Option>
-            <Option value="2">
-              không log
-            </Option>
+          <Select allowClear={true} defaultValue={"1"}>
+            <Option value="0">Chờ phế duyệt</Option>
+            <Option value="1">Hoạt động</Option>
+            <Option value="2">Không hoạt động</Option>
           </Select>
         </Form.Item>
       </Col>,
     );
-    // }
 
     return children;
   };
 
-  const onFinish = (values) => {
+  const searchStores = (values) => {
+    get(null, null, values?.search, values?.status, startDate, endDate)
     console.log('Received values of form: ', values);
   };
 
   // ------------------------------------------ get list ------------------------------------------
 
   //function get list store
-  function get() {
-    getStore().then((res) => {
+  function get(page, size, search, status, startDate, endDate) {
+    getStore(page, size, search, status, startDate, endDate).then((res) => {
       setData(mapDataSource(res?.data?.stores));
     });
   }
@@ -156,15 +139,14 @@ function FormListStore() {
   const mapDataSource = (values) => {
     return values.map((item, index) => ({
       ...item,
-      phone: item?.phone,
-      status: <Tag color={item.status === 1 ? "green" : "red"} key={index}>
-        {item.status === 1 ? "Hoạt động" : "Không hoạt động"}
+      // phone: item?.phone,
+      status: <Tag color={item?.status === 1 ? "green" : (item?.status === 2 ? "red" : "yellow")} key={index}>
+        {item?.status === 1 ? "Hoạt động" : (item?.status === 2 ? "Không hoạt động" : "Đang chờ phê duyệt")}
       </Tag>,
-      action: (<UserUpdateDelete
+      action: (<GetDetailUpdateDeleteUser
         handleOnDelete={handleOnDelete}
         id={item?.id}
       />),
-
     }))
   }
 
@@ -188,7 +170,7 @@ function FormListStore() {
         form={form}
         name="advanced_search"
         className="ant-advanced-search-form"
-        onFinish={onFinish}
+        onFinish={searchStores}
       >
         <Row gutter={24}>{getFields()}</Row>
         <Row>
@@ -227,11 +209,6 @@ function FormListStore() {
 }
 
 const App = () => (
-  // <div>
-  //   <AdvancedSearchForm />
-  //   <div className="search-result-list">Search Result List</div>
-  // </div>
-
   <div>
     <FormListStore />
   </div>

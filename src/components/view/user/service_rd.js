@@ -1,33 +1,42 @@
 import React, { useEffect, useState } from "react";
-import { Button, message, Table, Tag, Col, Form, Input, Row, Select, Space, DatePicker } from "antd";
-import { getUser, deleteUser } from "../../api/api_user";
-import UserUpdateDelete from "../../action/action";
+import { Button, message, Table, Tag, Col, Form, Input, Row, Select, Space, DatePicker, Modal, Descriptions, Alert } from "antd";
+import { getUser, deleteUser, getDetaiUser } from "../../api/api_user";
+import { GetDetailUpdateDeleteUser } from "../../action/action_user";
 import { useNavigate } from 'react-router-dom';
 import { Option } from "antd/lib/mentions";
+import moment from "moment";
 
 function FormListUser() {
   let navigate = useNavigate()
   const [data, setData] = useState([]);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [expand, setExpand] = useState(false);
   const [form] = Form.useForm();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dataDetail, setDataDetail] = useState([]);
 
   useEffect(() => {
-    get()
+    get(null, null, null, null)
   }, []);
 
-  const onChange = (date, dateString) => {
-    console.log(date, dateString);
-  };
+  const getStartDate = (value) => {
+    let startDate = value ? moment(value).format('YYYY-MM-DD') : null
+    setStartDate(startDate)
+  }
+
+  const getEndDate = (value) => {
+    let endDate = value ? moment(value).format('YYYY-MM-DD') : null
+    setEndDate(endDate)
+  }
 
   const getFields = () => {
-    const count = expand ? 10 : 6;
     const children = [];
 
-    // for (let i = 0; i < count; i++) {
     children.push(
       <Col span={8} >
         <Form.Item
-          name={`name_phone_email`}
+          name={`search`}
           label={`search`}
           rules={[
             {
@@ -35,18 +44,18 @@ function FormListUser() {
             },
           ]}
         >
-          <Input placeholder="Tên / Số điện thoại / Email" />
+          <Input allowClear={true} placeholder="Tên / Số điện thoại / Email" />
         </Form.Item>
       </Col>,
 
       <Col span={7} >
         <Form.Item
-          name={`start_end_date`}
+          name={`time`}
           label={`Thời gian tạo`}>
           <Space direction="horizontal">
-            <DatePicker format={'DD/MM/YYYY'} onChange={onChange} />
+            <DatePicker format={'DD/MM/YYYY'} onChange={getStartDate} />
             ~
-            <DatePicker format={'DD/MM/YYYY'} onChange={onChange} />
+            <DatePicker format={'DD/MM/YYYY'} onChange={getEndDate} />
           </Space>
         </Form.Item>
       </Col>,
@@ -62,24 +71,25 @@ function FormListUser() {
             },
           ]}
         >
-          <Select defaultValue="1">
+          <Select allowClear={true} defaultValue={"1"}>
             <Option value="1">Hoạt động</Option>
-            <Option value="2">Không hoạt động</Option>
+            <Option value="0">Không hoạt động</Option>
           </Select>
         </Form.Item>
       </Col>,
     );
-    // }
 
     return children;
   };
 
-  const onFinish = (values) => {
+
+  const searchUser = (values) => {
+    get(null, null, values?.search, values?.status, startDate, endDate)
     console.log('Received values of form: ', values);
   };
 
-  function get() {
-    getUser().then((res) => {
+  function get(page, size, search, status, startDate, endDate) {
+    getUser(page, size, search, status, startDate, endDate).then((res) => {
       setData(mapDataSource(res?.data?.users));
     });
   }
@@ -126,6 +136,60 @@ function FormListUser() {
     },
   ];
 
+
+  const formDetail = [
+    {
+      title: "Họ và tên",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Quyền",
+      dataIndex: "role",
+      key: "role",
+    },
+    {
+      title: "Số điện thoại",
+      dataIndex: "phone",
+      key: "phone",
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: "Tên tài khoản",
+      dataIndex: "userName",
+      key: "userName",
+    },
+    {
+      title: "Ngày sinh",
+      dataIndex: "dateOfBirth",
+      key: "dateOfBirth",
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+    },
+    {
+      title: "Ngày tạo",
+      dataIndex: "createdAt",
+      key: "createdAt",
+    },
+    {
+      title: "Tên cửa hàng",
+      dataIndex: "storeName",
+      key: "storeName",
+    },
+    {
+      title: "Ngày cập nhật",
+      dataIndex: "updatedAt",
+      key: "updatedAt",
+    },
+  ];
+
   const mapDataSource = (values) => {
     return values.map((item, index) => ({
       ...item,
@@ -133,11 +197,11 @@ function FormListUser() {
       status: <Tag color={item.status === 1 ? "green" : "red"} key={index}>
         {item.status === 1 ? "Hoạt động" : "Không hoạt động"}
       </Tag>,
-      action: (<UserUpdateDelete
+      action: (<GetDetailUpdateDeleteUser
         handleOnDelete={handleOnDelete}
+        getDetail={getDetail}
         id={item?.id}
       />),
-
     }))
   }
 
@@ -150,18 +214,59 @@ function FormListUser() {
     });
   };
 
+
+  const getDetail = (id, value) => {
+
+    getDetaiUser(id).then((res) => {
+      setIsModalOpen(value)
+      let result = res?.data?.user
+      if (result) {
+        if (result.status) {
+          result.status = result.status = 1 ? 'Hoạt động' : 'Không hoạt động'
+          result.role = result.role = 1 ? 'Khách hàng' : (result.role = 2 ? 'Chủ cửa hàng' : 'Admin')
+        }
+      }
+      setDataDetail(result)
+    }).catch((err) => {
+      message.error('get detail failed!');
+    });
+  };
+
   function onAddUser() {
     navigate("/dashboard/user/add")
   }
 
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const getItems = (values) => {
+    return values.map((value) => getItem(value))
+  }
+
+  const getItem = (column) => {
+    return <Descriptions.Item
+      labelStyle={column.labelStyle ? column.labelStyle : false} key={column.dataIndex}
+      label={column.title}
+      contentStyle={column.contentStyle ? column.contentStyle : false}
+    >
+      {dataDetail[0] ? dataDetail[0][column.dataIndex] : dataDetail[column.dataIndex]}
+    </Descriptions.Item>
+  }
+
   return (
     <>
+
       {/* form search */}
       <Form
         form={form}
         name="advanced_search"
         className="ant-advanced-search-form"
-        onFinish={onFinish}
+        onFinish={searchUser}
       >
         <Row gutter={24}>{getFields()}</Row>
         <Row>
@@ -188,25 +293,41 @@ function FormListUser() {
         </Row>
       </Form>
 
+
       {/* ---------------------hiển thị------------------------- */}
       <Button type="primary" onClick={onAddUser}>
         Thêm mới thông tin
       </Button>
 
       <Table columns={columns} dataSource={data} />
+
+      <Modal title="Thông tin chi tiết"
+        visible={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={true}
+        destroyOnClose={true}
+        width={750}>
+        <Descriptions
+          column={2}
+          contentStyle={{ marginRight: '50px' }}
+          columns={formDetail}
+          dataSource={dataDetail}
+        >
+          {getItems(formDetail)}
+        </Descriptions>
+      </Modal>
     </>
   );
 }
 
-const App = () => (
-  // <div>
-  //   <AdvancedSearchForm />
-  //   <div className="search-result-list">Search Result List</div>
-  // </div>
+const App = () => {
 
-  <div>
+  return (<div>
     <FormListUser />
-  </div>
-);
+
+  </div>)
+
+}
 
 export default App;

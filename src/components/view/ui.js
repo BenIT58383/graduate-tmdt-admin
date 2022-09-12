@@ -110,7 +110,7 @@ function ListFrom() {
             textAlign: 'center',
           }}
         >
-          Ant Design ©2018 Created by Ant UED
+          Web Admin ©2022 Created by Mr.Ben
         </Footer>
       </Layout>
     </Layout>

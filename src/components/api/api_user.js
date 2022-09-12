@@ -4,8 +4,24 @@ const url = `http://localhost:8081/users`
 const url_login = `http://localhost:8081/login`
 
 
-export const getUser = async (value) => {
-    const response = await DG_axios.get()
+// export const getUser = async (value) => {
+//     const response = await DG_axios.get()
+//     return response?.data || []
+// }
+
+export async function getUser(page, size, search, status, startDate, endDate) {
+
+    const response = await DG_axios.get(url, {
+        params: {
+            page: page ? page : null,
+            size: size ? size : null,
+            search: search ? search : null,
+            status: status ? status : null,
+            startDate: startDate ? startDate : null,
+            endDate: endDate ? endDate : null
+        }
+    }
+    )
     return response?.data || []
 }
 
@@ -26,8 +42,6 @@ export const getDetaiUser = async (id) => {
 }
 
 export const updateUser = async (id, value) => {
-    console.log(111111111111111, value);
-
     const response = await DG_axios.put(`${url}/${id}`, value);
     return response.data || []
 };
@@ -36,12 +50,6 @@ export const login = async (value) => {
     const response = await DG_axios.post(url_login, value);
     return response.data || []
 };
-
-const token = async (value) => {
-    localStorage.getItem('Token')
-}
-
-console.log(2222222222, localStorage.getItem('Token'));
 
 export const DG_axios = axios.create({
     baseURL: url,

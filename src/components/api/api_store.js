@@ -3,8 +3,18 @@ import axios from "axios";
 const url = `http://localhost:8081/stores`
 
 
-export async function getStore() {
-    const response = await DG_axios.get()
+export async function getStore(page, size, search, status, startDate, endDate) {
+    const response = await DG_axios.get(url, {
+        params: {
+            page: page ? page : null,
+            size: size ? size : null,
+            search: search ? search : null,
+            status: status ? status : null,
+            startDate: startDate ? startDate : null,
+            endDate: endDate ? endDate : null
+        }
+    }
+    )
     return response?.data || []
 }
 
