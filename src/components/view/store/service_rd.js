@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Button, message, Table, Tag, Col, Form, Input, Row, Select, DatePicker, Space } from "antd";
 import { getStore, deleteStore } from "../../api/api_store";
-import { GetDetailUpdateDeleteUser } from "../../action/action_user";
+import { GetDetailUpdateDeleteStore } from "../../action/action_store";
 import { useNavigate } from 'react-router-dom';
-import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import moment from "moment";
 
 const { Option } = Select;
@@ -143,7 +142,7 @@ function FormListStore() {
       status: <Tag color={item?.status === 1 ? "green" : (item?.status === 2 ? "red" : "yellow")} key={index}>
         {item?.status === 1 ? "Hoạt động" : (item?.status === 2 ? "Không hoạt động" : "Đang chờ phê duyệt")}
       </Tag>,
-      action: (<GetDetailUpdateDeleteUser
+      action: (<GetDetailUpdateDeleteStore
         handleOnDelete={handleOnDelete}
         id={item?.id}
       />),
@@ -158,10 +157,6 @@ function FormListStore() {
       message.error('Delete failed!');
     });
   };
-
-  function onAddStore() {
-    navigate("/dashboard/store/add")
-  }
 
   return (
     <>
@@ -185,7 +180,7 @@ function FormListStore() {
             </Button>
             <Button
               style={{
-                margin: '0 8px',
+                margin: '0 8px 10px',
               }}
               onClick={() => {
                 form.resetFields();
@@ -196,11 +191,6 @@ function FormListStore() {
           </Col>
         </Row>
       </Form>
-
-      {/* nút thêm mới thông tin */}
-      <Button type="primary" onClick={onAddStore}>
-        Thêm mới thông tin
-      </Button>
 
       {/* giao diện danh sách cửa hàng */}
       <Table columns={columns} dataSource={data} />

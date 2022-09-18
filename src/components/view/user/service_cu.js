@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Form, Input, message, Modal, Menu, Dropdown, Table, Alert } from "antd";
+import { Button, Form, Input, message } from "antd";
 import { createUser, getDetaiUser, updateUser } from '../../api/api_user';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from "react-router-dom";

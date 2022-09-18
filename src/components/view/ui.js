@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import 'antd/dist/antd.css';
 import {
   AliwangwangOutlined,
+  ArrowLeftOutlined,
   BulbOutlined,
   DesktopOutlined,
   FileOutlined,
@@ -25,10 +26,9 @@ function getItem(label, key, icon, children) {
 }
 
 const items = [
-  getItem(<AliwangwangOutlined />),
+  getItem(<ArrowLeftOutlined />),
   getItem('Người dùng ', '1', <PieChartOutlined />),
   getItem('Cửa hàng', '2', <DesktopOutlined />),
-  getItem('Đơn hàng', '3', <TeamOutlined />),
 ];
 
 function ListFrom() {

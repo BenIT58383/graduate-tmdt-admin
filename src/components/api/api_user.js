@@ -3,12 +3,6 @@ import axios from "axios";
 const url = `http://localhost:8081/users`
 const url_login = `http://localhost:8081/login`
 
-
-// export const getUser = async (value) => {
-//     const response = await DG_axios.get()
-//     return response?.data || []
-// }
-
 export async function getUser(page, size, search, status, startDate, endDate) {
 
     const response = await DG_axios.get(url, {
@@ -55,6 +49,6 @@ export const DG_axios = axios.create({
     baseURL: url,
     headers: {
         "Content-Type": "application/json",
-        "Authorization": localStorage.getItem('Token').replace('"', '')
+        "Authorization": localStorage.getItem('Token').replace(/"/g, '')
     },
 });
