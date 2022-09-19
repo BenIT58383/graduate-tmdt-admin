@@ -11,7 +11,6 @@ function FormListUser() {
   const [data, setData] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [expand, setExpand] = useState(false);
   const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [dataDetail, setDataDetail] = useState([]);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Form, Input, message } from "antd";
-import { getDetaiStore, updateStore, deleteStore } from '../../api/api_store';
+import { getDetailStore, updateStore, deleteStore } from '../../api/api_store';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from "react-router-dom";
 
@@ -8,14 +8,13 @@ import { useParams } from "react-router-dom";
 function UpdateDeleteStore() {
   const [form] = Form.useForm();
   let navigate = useNavigate()
-  const [data, setData] = useState([]);
 
   // navigate("/login")
   const { id } = useParams();
 
   useEffect(() => {
     if (id !== undefined) {
-      getDetaiStore(id).then((res) => {
+      getDetailStore(id).then((res) => {
         form.setFieldsValue(mapDataUpdate(res?.data?.store));
       }).catch((err) => {
         message.error('Get detail failed!', err);

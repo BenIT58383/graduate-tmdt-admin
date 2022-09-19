@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Button, message, Table, Tag, Col, Form, Input, Row, Select, DatePicker, Space } from "antd";
-import { getStore, deleteStore } from "../../api/api_store";
+import { Button, message, Table, Tag, Col, Form, Input, Row, Select, DatePicker, Space, Modal, Descriptions } from "antd";
+import { getStore, deleteStore, getDetailStore } from "../../api/api_store";
 import { GetDetailUpdateDeleteStore } from "../../action/action_store";
 import { useNavigate } from 'react-router-dom';
 import moment from "moment";
@@ -12,6 +12,8 @@ function FormListStore() {
   const [data, setData] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dataDetail, setDataDetail] = useState([]);
 
   useEffect(() => {
     get()
@@ -135,6 +137,69 @@ function FormListStore() {
     },
   ];
 
+  const formDetail = [
+    {
+      title: "Id",
+      dataIndex: "id",
+      key: "id",
+    },
+    {
+      title: "Tên cửa hàng",
+      dataIndex: "storeName",
+      key: "storeName",
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+    },
+    {
+      title: "Chủ cửa hàng",
+      dataIndex: "userName",
+      key: "userName",
+    },
+    {
+      title: "Số điện thoại",
+      dataIndex: "phone",
+      key: "phone",
+    },
+    {
+      title: "Mô tả",
+      dataIndex: "description",
+      key: "description",
+    },
+    {
+      title: "Ngày tạo",
+      dataIndex: "createdAt",
+      key: "createdAt",
+    },
+    {
+      title: "Ngày cập nhật",
+      dataIndex: "updatedAt",
+      key: "updatedAt",
+    },
+    {
+      title: "Ảnh 1",
+      dataIndex: "image1",
+      key: "image1",
+    },
+    {
+      title: "Link hỗ trợ",
+      dataIndex: "linkSupport",
+      key: "linkSupport",
+    },
+    {
+      title: "Ảnh 2",
+      dataIndex: "image2",
+      key: "image2",
+    },
+    {
+      title: "Ảnh 3",
+      dataIndex: "image3",
+      key: "image3",
+    },
+  ];
+
   const mapDataSource = (values) => {
     return values.map((item, index) => ({
       ...item,
@@ -144,10 +209,25 @@ function FormListStore() {
       </Tag>,
       action: (<GetDetailUpdateDeleteStore
         handleOnDelete={handleOnDelete}
+        getDetail={getDetail}
         id={item?.id}
       />),
     }))
   }
+
+  const getDetail = (id, value) => {
+
+    getDetailStore(id).then((res) => {
+      setIsModalOpen(value)
+      let result = res?.data?.store
+      if (result) {
+        result.status = result?.status === 1 ? "Hoạt động" : (result?.status === 2 ? "Không hoạt động" : "Đang chờ phê duyệt")
+      }
+      setDataDetail(result)
+    }).catch((err) => {
+      message.error('get detail failed!');
+    });
+  };
 
   const handleOnDelete = (value) => {
     deleteStore(value).then((res) => {
@@ -157,6 +237,28 @@ function FormListStore() {
       message.error('Delete failed!');
     });
   };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const getItems = (values) => {
+    return values.map((value) => getItem(value))
+  }
+
+  const getItem = (column) => {
+    return <Descriptions.Item
+      labelStyle={column.labelStyle ? column.labelStyle : false} key={column.dataIndex}
+      label={column.title}
+      contentStyle={column.contentStyle ? column.contentStyle : false}
+    >
+      {dataDetail[0] ? dataDetail[0][column.dataIndex] : dataDetail[column.dataIndex]}
+    </Descriptions.Item>
+  }
 
   return (
     <>
@@ -194,6 +296,23 @@ function FormListStore() {
 
       {/* giao diện danh sách cửa hàng */}
       <Table columns={columns} dataSource={data} />
+
+      <Modal title="Thông tin chi tiết"
+        visible={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={true}
+        destroyOnClose={true}
+        width={750}>
+        <Descriptions
+          column={2}
+          contentStyle={{ marginRight: '50px' }}
+          columns={formDetail}
+          dataSource={dataDetail}
+        >
+          {getItems(formDetail)}
+        </Descriptions>
+      </Modal>
     </>
   );
 }

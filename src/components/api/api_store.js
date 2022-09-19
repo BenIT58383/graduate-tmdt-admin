@@ -23,7 +23,7 @@ export const deleteStore = async (id) => {
     return response.data || []
 }
 
-export const getDetaiStore = async (id) => {
+export const getDetailStore = async (id) => {
     const response = await DG_axios.get(`${url}/${id}`);
     return response.data || []
 }
